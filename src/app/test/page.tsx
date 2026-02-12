@@ -5,7 +5,7 @@ import AddTagButton from '@/app/_components/add-tag-button';
 import DeleteCategoryButton from '@/app/_components/delete-category-button';
 import DeleteTagButton from '@/app/_components/delete-tag-button';
 import { FilterComponent } from '@/app/_components/filterComponent';
-import { Card } from '@/app/_components/ui/card';
+import { Card } from '@/components/ui/card';
 import { useTRPC } from '@/trpc/client';
 import { useQuery } from '@tanstack/react-query';
 import { Loader } from 'lucide-react';

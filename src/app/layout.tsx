@@ -3,9 +3,14 @@ import {
   ClerkProvider
 } from '@clerk/nextjs';
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import { TRPCReactProvider } from '../trpc/client';
 import "./globals.css";
+
+const nunitoSans = Nunito_Sans({
+  variable: '--font-sans',
+  subsets: ['latin'],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-    <html lang="en">
+    <html lang="en" className={nunitoSans.variable}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -9,7 +9,8 @@ export const env = createEnv({
         ADMIN_EMAIL: z.string().email(),
         UPSTASH_REDIS_REST_URL:z.string(),
         UPSTASH_REDIS_REST_TOKEN:z.string(),
-        CLOUDINARY_URL:z.string()
+        CLOUDINARY_URL:z.string(),
+        GROQ_API_KEY:z.string()
     },
     client: {
     },
@@ -20,7 +21,8 @@ export const env = createEnv({
         ADMIN_EMAIL: process.env.ADMIN_EMAIL,
         UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
         UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
-        CLOUDINARY_URL:process.env.CLOUDINARY_URL
+        CLOUDINARY_URL:process.env.CLOUDINARY_URL,
+        GROQ_API_KEY: process.env.GROQ_API_KEY,
     },
     emptyStringAsUndefined: true,
 });

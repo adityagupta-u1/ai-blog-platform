@@ -1,7 +1,7 @@
 
 'use client';
 import React, { FC } from 'react';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../../../components/ui/select';
 
 interface SingleInputSelectorProps {
     options: {

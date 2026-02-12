@@ -1,6 +1,5 @@
 import { db } from "@/server/db";
 import { categories, posts, postTags, tags } from "@/server/db/schema";
-import { GoogleGenAI } from "@google/genai";
 import { eq } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
@@ -13,7 +12,15 @@ import {
   protectedProcedure,
 } from "../../../server/api/trpc";
 
-const ai = new GoogleGenAI({apiKey: env.GOOGLE_GEMINI_API_KEY})
+import OpenAI from "openai";
+
+const client = new OpenAI({
+    apiKey: env.GROQ_API_KEY,
+    baseURL: "https://api.groq.com/openai/v1",
+});
+
+
+
 
 interface PostRedisWithoutTags {
   id:string;
@@ -132,11 +139,12 @@ export const postRouter = createTRPCRouter({
   .mutation(
     async ({input}) => {
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: `Write the blog post using proper HTML tags like <h1>, <p>, <ul>, <li> etc., and do not wrap it in backticks,the description of the post is this ${input.prompt} and the title is ${input.title}`,
+      const response = await client.responses.create({
+          model: "openai/gpt-oss-20b",
+          input: `Write the blog post using proper HTML tags like <h1>, <p>, <ul>, <li> etc., and do not wrap it in backticks,the description of the post is this ${input.prompt} and the title is ${input.title}`,
+
       });
-      return response.text;
+      return response.output_text
     }
   ),
   generateTitle: protectedProcedure
@@ -148,11 +156,12 @@ export const postRouter = createTRPCRouter({
   .mutation(
     async ({input}) => {
 
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: `Write 10 title of a blog post in js array format without any extra text only the array,${input.prompt}`,
+      const response = await client.responses.create({
+        model: "openai/gpt-oss-20b",
+        input: `Write 10 title of a blog post in js array format without any extra text only the array,${input.prompt}`,
       });
-      return response.text;
+      console.log("Response from OpenAI: ", response.output_text);
+      return response.output_text
     }
   ),
   savePost: protectedProcedure

@@ -9,8 +9,9 @@ import SinglePostComponent from '@/app/_components/SinglePostComponent';
 
 
 
-export default async function BlogPost({params}: {params:{slug:string}}) {
-  const post = await api.post.getPostBySlug({slug:params.slug}) as unknown as {id:string,title:string,content:string} | undefined;
+export default async function BlogPost({params}: {params:Promise<{slug:string}>}) {
+  const {slug} = await params;
+  const post = await api.post.getPostBySlug({slug}) as unknown as {id:string,title:string,content:string} | undefined;
   console.log(post)
   const {userId} = await auth();
     const cookieStore = await cookies();

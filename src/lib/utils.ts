@@ -67,4 +67,3 @@ export const handleUpload = async (file: File) => {
 //   await redis.srem('tags', tag);
 //   await redis.del(`tag:${tag}`);
 // }
-

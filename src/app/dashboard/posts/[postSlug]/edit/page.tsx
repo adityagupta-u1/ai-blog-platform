@@ -11,6 +11,7 @@ interface EditPageProps {
 }
 
 export default async function EditPost({ params: { postSlug } }: EditPageProps) {
+  
   const post = await api.post.getPostBySlug({ slug: postSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null } | undefined;
 
 

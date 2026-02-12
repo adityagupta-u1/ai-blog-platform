@@ -1,11 +1,11 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { useTRPC } from '@/trpc/client';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from './ui/button';
 
 export function FilterComponent({children}: {children?: React.ReactNode}) {
 

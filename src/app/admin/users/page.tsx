@@ -1,7 +1,7 @@
 
 import DeleteTagButton from '@/app/_components/delete-tag-button';
 import { FilterComponent } from '@/app/_components/filterComponent';
-import { Card } from '@/app/_components/ui/card';
+import { Card } from '@/components/ui/card';
 import { api } from '@/trpc/server';
 import React from 'react';
 
