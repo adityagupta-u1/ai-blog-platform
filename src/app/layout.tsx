@@ -2,9 +2,12 @@
 import {
   ClerkProvider
 } from '@clerk/nextjs';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import { TRPCReactProvider } from '../trpc/client';
+
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -32,17 +35,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const queryClient = new QueryClient()
+
   return (
-    <ClerkProvider>
-    <html lang="en" className={nunitoSans.variable}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <TRPCReactProvider>
-            {children}
-        </TRPCReactProvider>
-      </body>
-    </html>
-    </ClerkProvider>
+    <QueryClientProvider client={queryClient}>
+      <ClerkProvider>
+        <html lang="en" className={nunitoSans.variable}>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          >
+            <TRPCReactProvider>
+                {children}
+            </TRPCReactProvider>
+          </body>
+        </html>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </ClerkProvider>
+    </QueryClientProvider >
   );
 }

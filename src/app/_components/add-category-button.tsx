@@ -26,22 +26,22 @@ export default function AddCategoryButton() {
 
             // Optimistically update the cache
             queryClient.setQueryData(queryOptions.queryKey, (old: {id: string; name: string; slug: string;}[] | undefined) =>
-               old
-                 ? [
-                     ...old,
-                     {
-                       id: Math.random().toString(),
-                       name: newCategory.category,
-                       slug: newCategory.category.toLowerCase().replace(/\s+/g, '-'),
-                     },
-                   ]
-                 : [
-                     {
-                       id: Math.random().toString(),
-                       name:newCategory.category,
-                       slug: (newCategory.category).toLowerCase().replace(/\s+/g, '-'),
-                     },
-                   ]
+                old
+                    ? [
+                        ...old,
+                        {
+                        id: Math.random().toString(),
+                        name: newCategory.category,
+                        slug: newCategory.category.toLowerCase().replace(/\s+/g, '-'),
+                        },
+                    ]
+                    : [
+                        {
+                        id: Math.random().toString(),
+                        name:newCategory.category,
+                        slug: (newCategory.category).toLowerCase().replace(/\s+/g, '-'),
+                        },
+                    ]
             );
             console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
             return { previousTags };
