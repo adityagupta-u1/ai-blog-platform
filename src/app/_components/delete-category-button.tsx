@@ -1,28 +1,24 @@
 'use client';
-import { useTRPC } from '@/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loader, Trash } from 'lucide-react';
 import React from 'react';
 
 export default function DeleteCategoryButton({ id,name,slug }: { id: string, name:string, slug: string }) {
   const queryClient = useQueryClient();
-  
-  const trpc = useTRPC();
-    const queryOptions = trpc.categories.getCategories.queryOptions();
+  const utils = trpc.useUtils();
 
-  const { mutate, isPending } = useMutation(
-    trpc.categories.deleteCategory.mutationOptions({
+  const { mutate, isPending } = 
+    trpc.categories.deleteCategory.useMutation({
       onMutate: async (category) => {
         // Cancel ongoing fetches
-        console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
 
-        await queryClient.cancelQueries({ queryKey: queryOptions.queryKey });
-
+        await utils.categories.getCategories.cancel();
         // Snapshot previous categories
-        const previousCategories = queryClient.getQueryData<{id: string; name: string; slug: string; }[]>(queryOptions.queryKey);
+        const previousCategories = utils.categories.getCategories.getData();
 
         // Optimistically update the cache
-        queryClient.setQueryData(queryOptions.queryKey, (old: {id: string; name: string; slug: string;}[] | undefined) =>
+        utils.categories.getCategories.setData(undefined, (old: {id: string; name: string; slug: string;}[] | undefined) =>
           old?.filter((cat) => cat.id !== category.id)  
         );
         console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
@@ -31,15 +27,14 @@ export default function DeleteCategoryButton({ id,name,slug }: { id: string, nam
 
       onError: (_err, _category, context) => {
         // Rollback on error
-        queryClient.setQueryData(queryOptions.queryKey, context?.previousCategories);
+        utils.categories.getCategories.setData(undefined, context?.previousCategories);
       },
 
       onSettled: () => {
         // Refetch from server after mutation
-        queryClient.invalidateQueries({ queryKey: queryOptions.queryKey});
+        utils.categories.getCategories.invalidate();
       },
-    })
-  );
+    });
 
   return (
     <>

@@ -10,8 +10,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 // import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { ArrowRight, Brain, CheckCircle2, RotateCw, Sparkles } from 'lucide-react';
 // import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
@@ -19,8 +18,7 @@ import { useForm } from "react-hook-form";
 
 export default function GenerateTitle() {
     const { register, handleSubmit, formState: { errors }, getValues, watch } = useForm();
-    const trpc = useTRPC();
-    const { mutate, data, isSuccess, isPending, error } = useMutation(trpc.post.generateTitle.mutationOptions());
+    const { mutate, data, isSuccess, isPending, error } = trpc.post.generateTitle.useMutation();
     const [selectedTitle, setSelectedTitle] = useState<string>("");
     const [titleArray, setTitleArray] = useState<string[]>([]);
     const [hasGenerated, setHasGenerated] = useState<boolean>(false);

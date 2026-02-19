@@ -42,21 +42,21 @@ export async function POST(req: Request) {
                 console.log("new user")
                 const isAdminUser = evt.data.email_addresses[0].email_address === env.ADMIN_EMAIL;
                 const role = isAdminUser ? "admin" : "user"; // Set role based on email
-                await db.insert(users).values({
+                const newUser = await db.insert(users).values({
                         id: evt.data.id,
                         name: `${evt.data.first_name} ${evt.data.last_name}`,
                         email: evt.data.email_addresses[0].email_address,
                         image: evt.data.image_url,
                         role: role // Set role based on email
-                    }).returning({insertedId: users.id}); 
+                    }).returning({insertedId: users.id});
                 // // Update Clerk user metadata with role
                 // // Note: Ensure that the user exists in Clerk before updating metadata
-                // console.log("User created: ", newUser);
+                console.log("User created: ", newUser);
             }
             if(evt.type === "user.updated"){
                 console.log("User updated: ", evt.data);
             }
-            if(evt.type === "user.deleted"){       
+            if(evt.type === "user.deleted"){
                 console.log("User deleted: ", evt.data);
             }
         } catch {

@@ -1,15 +1,14 @@
 'use client'
 
 import { SanitizeHtml } from '@/lib/utils';
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { type RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import React, { useEffect } from 'react';
 
 const SinglePostComponent = ({post,userId,anonId}:{post: {id:string,title:string,content:string} | undefined;userId:string | null,anonId:RequestCookie  | undefined}) =>{
 
-  const trpc = useTRPC();
-  const {mutate} = useMutation(trpc.views.createView.mutationOptions())
+
+  const {mutate} = trpc.views.createView.useMutation()
 
   useEffect(()=>{
     if(post?.id){

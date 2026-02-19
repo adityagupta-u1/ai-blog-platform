@@ -1,14 +1,13 @@
 'use client'
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
+// import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 
 export default function PostCardComponent({post}:{post:{id:string,title:string,slug:string}}) {
-    const trpc = useTRPC();
     const router = useRouter();
-    const {mutate,isSuccess,data,isPending} = useMutation(trpc.post.deletePost.mutationOptions());
+    const {mutate,isSuccess,data,isPending} = trpc.post.deletePost.useMutation()
     useEffect(() => {
         if(isSuccess && data) {
             console.log("Post deleted successfully");

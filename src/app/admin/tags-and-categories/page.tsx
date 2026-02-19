@@ -4,8 +4,7 @@ import AddCategoryButton from '@/app/_components/add-category-button';
 import AddTagButton from '@/app/_components/add-tag-button';
 import DeleteCategoryButton from '@/app/_components/delete-category-button';
 import DeleteTagButton from '@/app/_components/delete-tag-button';
-import { useTRPC } from '@/trpc/client';
-import { useQuery } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import React, { useState } from 'react';
 
 // shadcn/ui imports
@@ -295,19 +294,17 @@ const SearchFilterBar = ({
 );
 
 export default function TagsAndCategories() {
-  const trpc = useTRPC();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [, setActiveTab] = useState('all');
   
-  const { data: categories, isPending: isCategoriesPending } = useQuery(
-    trpc.categories.getCategories.queryOptions()
-  );
+  const { data: categories, isPending: isCategoriesPending } = 
+    trpc.categories.getCategories.useQuery()
   
-  const { data: tags, isPending: isTagsPending } = useQuery(
-    trpc.tags.getTags.queryOptions()
-  );
+  const { data: tags, isPending: isTagsPending } = 
+    trpc.tags.getTags.useQuery()
 
   // Filter and sort data
   const filterData = <T extends { name: string }>(items: T[]): T[] => {
@@ -331,8 +328,8 @@ export default function TagsAndCategories() {
     return filtered;
   };
 
-  const filteredTags = filterData(tags || []);
-  const filteredCategories = filterData(categories || []);
+  const filteredTags = filterData(tags ?? []);
+  const filteredCategories = filterData(categories ?? []);
 
   if (isCategoriesPending && isTagsPending) {
     return (
@@ -420,7 +417,7 @@ export default function TagsAndCategories() {
         <SearchFilterBar 
           onSearch={setSearchQuery}
           onSort={setSortOrder}
-          viewMode={viewMode}
+          // viewMode={viewMode}
           onViewModeChange={setViewMode}
         />
 
@@ -451,7 +448,7 @@ export default function TagsAndCategories() {
               <Separator />
 
               {filteredTags.length === 0 ? (
-                <EmptyState type="tags" onAdd={() => {}} />
+                <EmptyState type="tags" />
               ) : (
                 <div className={`
                   grid gap-4
@@ -461,7 +458,7 @@ export default function TagsAndCategories() {
                   }
                 `}>
                   {filteredTags.map((tag) => (
-                    <TagCard key={tag.id} tag={tag} onDelete={() => {}} />
+                    <TagCard key={tag.id} tag={tag} />
                   ))}
                 </div>
               )}
@@ -485,7 +482,7 @@ export default function TagsAndCategories() {
               <Separator />
 
               {filteredCategories.length === 0 ? (
-                <EmptyState type="categories" onAdd={() => {}} />
+                <EmptyState type="categories" />
               ) : (
                 <div className={`
                   grid gap-4
@@ -498,7 +495,6 @@ export default function TagsAndCategories() {
                     <CategoryCard 
                       key={category.id} 
                       category={category} 
-                      onDelete={() => {}} 
                     />
                   ))}
                 </div>
@@ -523,7 +519,7 @@ export default function TagsAndCategories() {
             <Separator />
             
             {filteredTags.length === 0 ? (
-              <EmptyState type="tags" onAdd={() => {}} />
+              <EmptyState type="tags" />
             ) : (
               <div className={`
                 grid gap-4
@@ -533,7 +529,7 @@ export default function TagsAndCategories() {
                 }
               `}>
                 {filteredTags.map((tag) => (
-                  <TagCard key={tag.id} tag={tag} onDelete={() => {}} />
+                  <TagCard key={tag.id} tag={tag} />
                 ))}
               </div>
             )}
@@ -556,7 +552,7 @@ export default function TagsAndCategories() {
             <Separator />
             
             {filteredCategories.length === 0 ? (
-              <EmptyState type="categories" onAdd={() => {}} />
+              <EmptyState type="categories" />
             ) : (
               <div className={`
                 grid gap-4
@@ -569,7 +565,7 @@ export default function TagsAndCategories() {
                   <CategoryCard 
                     key={category.id} 
                     category={category} 
-                    onDelete={() => {}} 
+                    // onDelete={() => {}} 
                   />
                 ))}
               </div>

@@ -1,6 +1,6 @@
 'use client';
-import { useTRPC } from '@/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { trpc } from '@/trpc/client';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -9,69 +9,84 @@ type FormData = {
 };
 
 export default function AddCategoryButton() {
-    const [clicked, setClicked] = useState<boolean>(false);
-    const {handleSubmit,register,formState:{errors}} = useForm<FormData>()
-    const trpc = useTRPC();
-    const queryClient = useQueryClient();
-    const queryOptions = trpc.categories.getCategories.queryOptions();
-    const {mutate, isPending} = useMutation(trpc.categories.addCategory.mutationOptions({
-        onMutate: async (newCategory) => {
-            // Cancel ongoing fetches
-            console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
+    const [clicked, setClicked] = useState(false);
+    const utils = trpc.useUtils();
 
-            await queryClient.cancelQueries({ queryKey: queryOptions.queryKey });
+    const {
+        handleSubmit,
+        register,
+        formState: { errors },
+    } = useForm<FormData>();
 
-            // Snapshot previous categories
-            const previousTags = queryClient.getQueryData<{id: string; name: string; slug: string; }[]>(queryOptions.queryKey);
+    const { mutate, isPending } =
+        trpc.categories.addCategory.useMutation({
+        async onMutate(newCategory) {
+            // Cancel outgoing fetches
+            await utils.categories.getCategories.cancel();
 
-            // Optimistically update the cache
-            queryClient.setQueryData(queryOptions.queryKey, (old: {id: string; name: string; slug: string;}[] | undefined) =>
+            // Snapshot previous value
+            const previousCategories =
+            utils.categories.getCategories.getData();
+
+            // Optimistically update
+            utils.categories.getCategories.setData(
+            undefined,
+            (old) =>
                 old
-                    ? [
-                        ...old,
-                        {
+                ? [
+                    ...old,
+                    {
                         id: Math.random().toString(),
                         name: newCategory.category,
-                        slug: newCategory.category.toLowerCase().replace(/\s+/g, '-'),
-                        },
+                        slug: newCategory.category
+                        .toLowerCase()
+                        .replace(/\s+/g, '-'),
+                    },
                     ]
-                    : [
-                        {
-                        id: Math.random().toString(),
-                        name:newCategory.category,
-                        slug: (newCategory.category).toLowerCase().replace(/\s+/g, '-'),
-                        },
-                    ]
+                : []
             );
-            console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
-            return { previousTags };
+
+            return { previousCategories };
         },
 
-        onError: (_err, _tag, context) => {
-            // Rollback on error
-            queryClient.setQueryData(queryOptions.queryKey, context?.previousTags);
+        onError(_err, _newCategory, context) {
+            utils.categories.getCategories.setData(
+            undefined,
+            context?.previousCategories
+            );
         },
 
-        onSettled: () => {
-            // Refetch from server after mutation
-            queryClient.invalidateQueries({ queryKey: queryOptions.queryKey});
+        onSettled() {
+            utils.categories.getCategories.invalidate();
         },
-    }));
+        });
 
+    return (
+        <>
+        {clicked && (
+            <form
+            onSubmit={handleSubmit((data) =>
+                mutate({ category: data.category })
+            )}
+            >
+            <input
+                type="text"
+                {...register('category', { required: true })}
+                placeholder="enter category here"
+            />
+            {errors.category && (
+                <p role="alert">Category is required</p>
+            )}
+            <button type="submit">Submit</button>
+            </form>
+        )}
 
-
-  return (
-    <>
-        {
-            clicked && (
-                <form onSubmit={handleSubmit((data) => {mutate({category: data.category})})}>
-                    <input type="text" {...register('category',{required:true})} id='category' placeholder='enter category here' />
-                    {errors.category && <p role="alert">Category is required</p>}
-                    <button type="submit">submit</button>
-                </form>
-            )
-        }
-        <button onClick={() => setClicked(true)} disabled={isPending}>Add Category</button>
-    </>
-  )
+        <button
+            onClick={() => setClicked(true)}
+            disabled={isPending}
+        >
+            {isPending ? 'Adding...' : 'Add Category'}
+        </button>
+        </>
+    );
 }

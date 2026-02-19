@@ -4,9 +4,9 @@ import { v4 as uuidV4 } from "uuid";
 export const users = pgTable("users", {
   id: varchar("id",{length:255}).primaryKey(),
   email: varchar("email", { length: 255 }).notNull(),
-  name: varchar("name", { length: 255 }).notNull(), 
+  name: varchar("name", { length: 255 }).notNull(),
   image: varchar("image", { length: 255 }).notNull(),
-  role: text("role").default("user"), 
+  role: text("role").default("user"),
 });
 
 export const posts = pgTable("posts", {

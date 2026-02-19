@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
@@ -17,9 +16,9 @@ import { FileText, Sparkles } from 'lucide-react';
 export default function Form({tags,category}:{tags:{id:string,name:string}[],category:{id:string,name:string}[]}) {
 
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const trpc = useTRPC();
-    const {mutate,data,isSuccess,isPending} = useMutation(trpc.post.generatePosts.mutationOptions());
-    const {mutate:savePostMutate,isSuccess:savePostIsSuccess} = useMutation(trpc.post.savePost.mutationOptions());
+
+    const {mutate,data,isSuccess,isPending} = trpc.post.generatePosts.useMutation();
+    const {mutate:savePostMutate,isSuccess:savePostIsSuccess} = trpc.post.savePost.useMutation();
     const stepContext = useContext(TitleContext);
     
     if (!stepContext) {

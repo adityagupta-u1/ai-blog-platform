@@ -1,49 +1,44 @@
 'use client';
-import { useTRPC } from '@/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { Loader, Trash } from 'lucide-react';
 import React from 'react';
 
 export default function DeleteTagButton({id}:{id:string}) {
-    const queryClient = useQueryClient();
-    const trpc = useTRPC();
-    const queryOptions = trpc.tags.getTags.queryOptions();
-    const { mutate, isPending } = useMutation(
-        trpc.tags.deleteTag.mutationOptions({
+    const utils = trpc.useUtils();
+    const { mutate, isPending } = 
+        trpc.tags.deleteTag.useMutation({
         onMutate: async (tag) => {
             // Cancel ongoing fetches
-            console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
+            // console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
 
-            await queryClient.cancelQueries({ queryKey: queryOptions.queryKey });
+            await utils.tags.getTags.cancel();
 
             // Snapshot previous categories
-            const previousTags = queryClient.getQueryData<{id: string; name: string; slug: string; }[]>(queryOptions.queryKey);
+            const previousTags = utils.tags.getTags.getData();
 
             // Optimistically update the cache
-            queryClient.setQueryData(queryOptions.queryKey, (old: {id: string; name: string; slug: string;}[] | undefined) =>
+            utils.tags.getTags.setData(undefined, (old: {id: string; name: string; slug: string;}[] | undefined) =>
             old?.filter((cat) => cat.id !== tag.id)
             );
-            console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
             return { previousTags };
         },
 
         onError: (_err, _tag, context) => {
             // Rollback on error
-            queryClient.setQueryData(queryOptions.queryKey, context?.previousTags);
+            utils.tags.getTags.setData(undefined, context?.previousTags);
         },
 
         onSettled: () => {
             // Refetch from server after mutation
-            queryClient.invalidateQueries({ queryKey: queryOptions.queryKey});
+            utils.tags.getTags.invalidate();
         },
-        })
-    );
+        });
 
-  return (
-    <>
-    {
-        isPending ? <span><Loader /> </span> : <button onClick={() => mutate({id:id})} disabled={isPending}><Trash color='red'/></button>
-    }
-    </>
-  )
+    return (
+        <>
+        {
+            isPending ? <span><Loader /> </span> : <button onClick={() => mutate({id:id})} disabled={isPending}><Trash color='red'/></button>
+        }
+        </>
+    )
 }

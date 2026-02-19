@@ -1,15 +1,14 @@
 'use client'
 
-import { useTRPC } from '@/trpc/client'
-import { useMutation } from '@tanstack/react-query'
+import { trpc } from '@/trpc/client'
 import { Editor, NodeViewContent, NodeViewWrapper } from '@tiptap/react'
 import { Node as ProseMirrorNode } from 'prosemirror-model'
 import React from 'react'
 
 export default function ParagraphComponent({ node, editor, getPos }: { node: ProseMirrorNode; editor: Editor; getPos: () => number }) {
 
-    const trpc = useTRPC();
-    const {isPending,mutateAsync} = useMutation(trpc.editor.rewriteParagraph.mutationOptions()); // Correct method to get text content
+    // const utils = trpc.useUtils();
+    const {isPending,mutateAsync} = trpc.editor.rewriteParagraph.useMutation(); // Correct method to get text content
 
     const HandleRewrite = async () => {
       const text = node.content.textBetween(0, node.content.size); // Correct method

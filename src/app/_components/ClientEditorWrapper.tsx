@@ -1,8 +1,7 @@
 'use client';
 
 import TextEditor from '@/app/_components/form/textEditor';
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { useRouter } from 'next/navigation';
 import React, { FC, useEffect } from 'react';
 
@@ -21,8 +20,7 @@ interface ClientEditorWrapperProps {
 
 const ClientEditorWrapper:FC<ClientEditorWrapperProps> = ({post, tags, categories})=> {
       const router = useRouter();
-    const trpc = useTRPC();
-    const {mutate,isSuccess,data} = useMutation(trpc.post.editPost.mutationOptions());
+    const {mutate,isSuccess,data} = trpc.post.editPost.useMutation();
   
 
     useEffect(() => {   

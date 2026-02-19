@@ -12,7 +12,7 @@ export default async function Home() {
       {/** ... */}
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
         <Suspense fallback={<div>Loading...</div>}>
-          <HomeClient />        
+          <HomeClient />
         </Suspense>
       </ErrorBoundary>
     </HydrateClient>

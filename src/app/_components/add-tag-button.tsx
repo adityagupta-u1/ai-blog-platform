@@ -1,6 +1,6 @@
 'use client';
-import { useTRPC } from '@/trpc/client';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -11,53 +11,52 @@ type FormData = {
 export default function AddTagButton() {
     const [clicked, setClicked] = useState<boolean>(false);
     const {handleSubmit,register,formState:{errors}} = useForm<FormData>()
-    const trpc = useTRPC();
     // const router = useRouter();
+    const utils = trpc.useUtils();
     const queryClient = useQueryClient();
-    const queryOptions = trpc.tags.getTags.queryOptions();
-    const {mutate, isPending} = useMutation(trpc.tags.addTag.mutationOptions({
+    // const queryOptions = trpc.tags.getTags.queryOptions();
+    const {mutate, isPending} = trpc.tags.addTag.useMutation({
         onMutate: async (tag) => {
             // Cancel ongoing fetches
             console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
 
-            await queryClient.cancelQueries({ queryKey: queryOptions.queryKey });
-
+            // await queryClient.cancelQueries({ queryKey: queryOptions.queryKey });
+            await utils.tags.getTags.cancel();
             // Snapshot previous categories
-            const previousTags = queryClient.getQueryData<{id: string; name: string; slug: string; }[]>(queryOptions.queryKey);
-
+            // const previousTags = queryClient.getQueryData<{id: string; name: string; slug: string; }[]>(queryOptions.queryKey);
+            const previousTags = utils.tags.getTags.getData();
             // Optimistically update the cache
-            queryClient.setQueryData(queryOptions.queryKey, (old: {id: string; name: string; slug: string;}[] | undefined) =>
-               old
-                 ? [
-                     ...old,
-                     {
-                       id: Math.random().toString(),
-                       name: typeof tag === 'string' ? tag : tag.tag,
-                       slug: (typeof tag === 'string' ? tag : tag.tag).toLowerCase().replace(/\s+/g, '-'),
-                     },
-                   ]
-                 : [
-                     {
-                       id: Math.random().toString(),
-                       name: typeof tag === 'string' ? tag : tag.tag,
-                       slug: (typeof tag === 'string' ? tag : tag.tag).toLowerCase().replace(/\s+/g, '-'),
-                     },
-                   ]
+            utils.tags.getTags.setData(undefined, (old: {id: string; name: string; slug: string;}[] | undefined) =>
+                old
+                    ? [
+                        ...old,
+                        {
+                        id: Math.random().toString(),
+                        name: typeof tag === 'string' ? tag : tag.tag,
+                        slug: (typeof tag === 'string' ? tag : tag.tag).toLowerCase().replace(/\s+/g, '-'),
+                        },
+                    ]
+                    : [
+                        {
+                        id: Math.random().toString(),
+                        name: typeof tag === 'string' ? tag : tag.tag,
+                        slug: (typeof tag === 'string' ? tag : tag.tag).toLowerCase().replace(/\s+/g, '-'),
+                        },
+                    ]
             );
-            console.log(queryClient.getQueryCache().getAll().map(q => q.queryKey));
             return { previousTags };
         },
 
         onError: (_err, _tag, context) => {
             // Rollback on error
-            queryClient.setQueryData(queryOptions.queryKey, context?.previousTags);
+            utils.tags.getTags.setData(undefined, context?.previousTags);
         },
 
         onSettled: () => {
             // Refetch from server after mutation
-            queryClient.invalidateQueries({ queryKey: queryOptions.queryKey});
+            utils.tags.getTags.invalidate();
         },
-    }));
+    });
 
     // useEffect(()=>{
     //     if(data && !isPending) {
@@ -69,18 +68,18 @@ export default function AddTagButton() {
     //     }
     // },[router,data,isPending,reset]);
 
-  return (
-    <>
-        {
-            clicked && (
-                <form onSubmit={handleSubmit((data) => {mutate({tag: data.tag})})}>
-                    <input type="text" {...register('tag',{required:true})} id='tag' placeholder='enter tag here' />
-                    {errors.tag && <p role="alert">Tag is required</p>}
-                    <button type="submit">submit</button>
-                </form>
-            )
-        }
-        <button onClick={() => setClicked(true)} disabled={isPending}>Add Tags</button>
-    </>
-  )
+    return (
+        <>
+            {
+                clicked && (
+                    <form onSubmit={handleSubmit((data) => {mutate({tag: data.tag})})}>
+                        <input type="text" {...register('tag',{required:true})} id='tag' placeholder='enter tag here' />
+                        {errors.tag && <p role="alert">Tag is required</p>}
+                        <button type="submit">submit</button>
+                    </form>
+                )
+            }
+            <button onClick={() => setClicked(true)} disabled={isPending}>Add Tags</button>
+        </>
+    )
 }

@@ -1,13 +1,13 @@
 "use client"
 
 import {
-    Clock,
-    Command,
-    LifeBuoy,
-    Settings,
-    Users,
-    Wallet,
-    type LucideProps,
+  Clock,
+  Command,
+  LifeBuoy,
+  Settings,
+  Users,
+  Wallet,
+  type LucideProps,
 } from "lucide-react"
 import * as React from "react"
 
@@ -15,13 +15,13 @@ import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { Role } from "@/global"
 
@@ -65,52 +65,83 @@ type SidebarData = {
   }[]
 }
 
-const roleNavData:Record<Role,SidebarData> = {
+const roleNavData: Record<Role, SidebarData> = {
   Admin: {
     navMain: [
       {
-        title: "Leads Management",
-        url: "/dashboard/SuperAdmin/lead-management",
-        icon: Users, // e.g. from lucide-react
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: Command,
       },
       {
-        title: "Assign Leads",
-        url: "/dashboard/SuperAdmin/assign-leads",
-        icon: Wallet, // or Banknote, CreditCard, etc.
+        title: "All Posts",
+        url: "/dashboard/posts",
+        icon: Users,
       },
-      // {
-      //   title: "Attendance Management",
-      //   url: "/dashboard/SuperAdmin/attendance_management",
-      //   icon: Clock,
-      // },
       {
-        title: "Configuration & Settings",
+        title: "Create Post",
+        url: "/dashboard/createPost",
+        icon: Wallet,
+      },
+      {
+        title: "AI Tools",
         url: "#",
         icon: Settings,
         items: [
-          { title: "Departments", url: "/dashboard/SuperAdmin/configuration/departments" },
-          { title: "Leave Types", url: "/dashboard/SuperAdmin/configuration/leave-types" },
-          { title: "Holidays", url: "/dashboard/SuperAdmin/configuration/holidays" },
-          // { title: "Manage Admin Accounts", url: "/dashboard/SuperAdmin/configuration/manage_admin_accounts" },
-          // { title: "Full System Configuration Access", url: "/dashboard/SuperAdmin/configuration/system_configuration" },
+          { title: "Generate Blog", url: "/dashboard/ai/generate" },
+          { title: "SEO Optimizer", url: "/dashboard/ai/seo" },
+          { title: "Title Generator", url: "/dashboard/ai/title" },
+          { title: "Content Ideas", url: "/dashboard/ai/ideas" },
         ],
+      },
+      {
+        title: "Analytics",
+        url: "/dashboard/analytics",
+        icon: Clock,
       },
     ],
     navSecondary: [
-      { title: "Support", url: "#", icon: LifeBuoy },
+      {
+        title: "Billing",
+        url: "/dashboard/billing",
+        icon: Wallet,
+      },
+      {
+        title: "Support",
+        url: "/dashboard/support",
+        icon: LifeBuoy,
+      },
     ],
   },
+
   User: {
     navMain: [
-      { title: "Employee Management", url: "/dashboard/Admin/employee-management", icon: Users },
-      { title: "Salary Register", url: "/dashboard/Admin/salary-register", icon: Wallet },
-      { title: "Attendance Management", url: "/dashboard/Admin/attendance_management", icon: Clock },
+      {
+        title: "My Posts",
+        url: "/dashboard/posts",
+        icon: Users,
+      },
+      {
+        title: "Create Post",
+        url: "/dashboard/createPost",
+        icon: Wallet,
+      },
+      {
+        title: "AI Assistant",
+        url: "/dashboard/ai",
+        icon: Settings,
+      },
     ],
     navSecondary: [
-      { title: "Support", url: "#", icon: LifeBuoy, },
+      {
+        title: "Support",
+        url: "/dashboard/support",
+        icon: LifeBuoy,
+      },
     ],
   },
-}
+};
+
 
 
 export function AppSidebar({ email,name,...props }:AppSidebarProps ) {

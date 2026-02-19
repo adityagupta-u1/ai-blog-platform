@@ -1,8 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { trpc } from '@/trpc/client';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -11,8 +10,7 @@ export function FilterComponent({children}: {children?: React.ReactNode}) {
 
     const [filter, setFilter] = React.useState<boolean>(false);
     const router = useRouter();
-    const trpc = useTRPC();
-    const {mutate,data,isPending} = useMutation(trpc.filter.filterPost.mutationOptions())
+    const {mutate,data,isPending} = trpc.filter.filterPost.useMutation();
 
     const handleClick = () => {
         // This is where you would handle the filter logic
