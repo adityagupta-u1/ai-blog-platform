@@ -11,7 +11,6 @@ export const env = createEnv({
         UPSTASH_REDIS_REST_TOKEN:z.string(),
         CLOUDINARY_URL:z.string(),
         GROQ_API_KEY:z.string(),
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
         CLERK_SECRET_KEY: z.string(),
     },
     client: {
