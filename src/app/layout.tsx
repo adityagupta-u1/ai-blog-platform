@@ -40,7 +40,7 @@ export default function RootLayout({
 
   return (
     // <QueryClientProvider client={queryClient}>
-      <ClerkProvider publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
+      <ClerkProvider publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY as string}>
         <html lang="en" className={nunitoSans.variable}>
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
