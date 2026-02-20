@@ -4,13 +4,13 @@ import { api } from '@/trpc/server';
 import React from 'react';
 import ClientEditorWrapper from '../../../../_components/ClientEditorWrapper';
 
-interface EditPageProps {
-  params: {
+type EditPageProps = {
+  params: Promise<{
     postSlug: string;
-  };
-}
-
-export default async function EditPost({ params: { postSlug } }: EditPageProps) {
+  }>;
+};
+export default async function EditPost({ params }: EditPageProps) {
+  const { postSlug } = await params;
   
   const post = await api.post.getPostBySlug({ slug: postSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null } | undefined;
 

@@ -19,7 +19,7 @@ export const categoriesRouter = createTRPCRouter({
                 return JSON.parse(c) as { id: string; name: string; slug: string };
             })// remove any nulls from bad JSON
 
-            return categoriesList;     
+            return categoriesList;
         } else {
             const categoryList = await db.select({
                 id: categories.id,

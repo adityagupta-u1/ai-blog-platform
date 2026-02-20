@@ -17,7 +17,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 
 export default function GenerateTitle() {
-    const { register, handleSubmit, formState: { errors }, getValues, watch } = useForm();
+    const { register, handleSubmit, formState: { errors }, getValues, watch } = useForm<{ prompt: string }>();
     const { mutate, data, isSuccess, isPending, error } = trpc.post.generateTitle.useMutation();
     const [selectedTitle, setSelectedTitle] = useState<string>("");
     const [titleArray, setTitleArray] = useState<string[]>([]);
