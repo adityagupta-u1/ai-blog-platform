@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import { TRPCReactProvider } from '../trpc/client';
 
+import { env } from '@/env';
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
@@ -39,7 +40,7 @@ export default function RootLayout({
 
   return (
     // <QueryClientProvider client={queryClient}>
-      <ClerkProvider>
+      <ClerkProvider publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
         <html lang="en" className={nunitoSans.variable}>
           <body
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
