@@ -7,12 +7,21 @@ declare global {
   var redis: Redis | undefined;
 }
 
-export const redis =
-  global.redis ??
-  new Redis({
-    url: process.env.UPSTASH_REDIS_REST_URL!,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-    automaticDeserialization:false
-  });
+const globalForRedis = globalThis as unknown as { redis: Redis | undefined };
 
-if (process.env.NODE_ENV !== 'production') global.redis = redis;
+const url = process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+export const redis =
+  globalForRedis.redis ??
+  (url && token
+    ? new Redis({
+        url,
+        token,
+        automaticDeserialization: false
+      })
+    : (null as unknown as Redis));
+
+if (process.env.NODE_ENV !== 'production' && url && token) {
+  globalForRedis.redis = redis;
+}

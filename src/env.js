@@ -14,7 +14,7 @@ export const env = createEnv({
         CLERK_SECRET_KEY: z.string(),
     },
     client: {
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     },
     runtimeEnv:{
         DATABASE_URL: process.env.DATABASE_URL,
@@ -26,6 +26,7 @@ export const env = createEnv({
         CLOUDINARY_URL:process.env.CLOUDINARY_URL,
         GROQ_API_KEY: process.env.GROQ_API_KEY,
         CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     },
     emptyStringAsUndefined: true,
 });
