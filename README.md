@@ -1,36 +1,165 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🤖 AI-Powered Blog Platform
 
-## Getting Started
+🔗 Live Demo: https://ai-blog-platform-ecru.vercel.app/
+📂 Repository: https://github.com/adityagupta-u1/ai-blog-platform
 
-First, run the development server:
+A production-ready full-stack blog platform powered by AI with intelligent content generation, caching, and type-safe APIs.
 
-```bash
+Built using Next.js (App Router), tRPC, Drizzle ORM, PostgreSQL (Neon), Redis, and AI APIs, this project demonstrates scalable architecture, performance optimization, and modern backend engineering practices.
+
+🚀 Features
+
+✍️ AI-powered blog generation
+
+🧠 Smart title, summary & content suggestions
+
+⚡ Redis caching for performance optimization
+
+🔐 Secure authentication (Clerk)
+
+📚 Category-based blog organization
+
+🗂️ Draft & publish workflow
+
+🛡️ Protected API routes
+
+⚡ End-to-end type safety with tRPC
+
+🗄️ PostgreSQL with Drizzle ORM
+
+🎨 Responsive UI with TailwindCSS
+
+🛠️ Tech Stack
+Frontend
+
+Next.js (App Router)
+
+React
+
+TailwindCSS
+
+TypeScript
+
+Backend
+
+tRPC
+
+Drizzle ORM
+
+PostgreSQL (Neon)
+
+Clerk Authentication
+
+Caching Layer
+
+Redis (Upstash / self-hosted)
+
+AI Integration
+
+OpenAI / Google Gemini (configurable)
+
+🏗️ System Architecture
+Client (Next.js UI)
+        ↓
+tRPC (Type-safe API layer)
+        ↓
+Business Logic Layer
+        ↓
+Redis Cache (fast retrieval)
+        ↓
+PostgreSQL (Neon)
+        ↓
+AI Service (OpenAI / Gemini)
+🔥 Why Redis?
+
+Redis is used to:
+
+Cache frequently accessed blog posts
+
+Reduce database load
+
+Improve response time
+
+Cache AI-generated results
+
+Enable future scalability (rate limiting, session storage)
+
+📦 Installation
+git clone https://github.com/adityagupta-u1/ai-blog-platform.git
+cd ai-blog-platform
+npm install
+🔐 Environment Variables
+
+Create a .env file:
+
+DATABASE_URL=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+OPENAI_API_KEY= (or GEMINI_API_KEY)
+REDIS_URL=
+REDIS_TOKEN=
+🧪 Run Locally
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit: http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🗄️ Database Setup
+npx drizzle-kit generate
+npx drizzle-kit push
+⚡ Caching Strategy
+Layer	What is Cached	Why
+Blog Posts	Frequently viewed posts	Reduce DB queries
+AI Responses	Generated content	Avoid repeated API cost
+Categories	Static data	Faster page loads
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🎯 What This Project Demonstrates
 
-## Learn More
+Full-stack TypeScript architecture
 
-To learn more about Next.js, take a look at the following resources:
+Type-safe APIs with tRPC
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Server Components vs Client Components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Database schema management with Drizzle
 
-## Deploy on Vercel
+Redis caching patterns
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+AI integration in real-world applications
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Scalable backend design principles
+
+Clean, modular folder structure
+
+🌍 Deployment
+
+Recommended setup:
+
+Vercel → Frontend + API
+
+Neon → PostgreSQL
+
+Upstash Redis → Caching
+
+Clerk → Authentication
+
+📈 Future Improvements
+
+AI-powered SEO optimization
+
+Blog analytics dashboard
+
+Comment & reaction system
+
+Background job queue (Redis-based)
+
+Content moderation AI
+
+Rate limiting using Redis
+
+Vector search for semantic blog discovery
+
+👨‍💻 Author
+
+Aditya Gupta
+Full Stack Developer
+Kanpur, India
