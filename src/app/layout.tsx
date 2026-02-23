@@ -4,9 +4,11 @@ import {
 } from '@clerk/nextjs';
 // import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import { TRPCReactProvider } from '../trpc/client';
+
 
 import { env } from '@/env';
 import "./globals.css";
@@ -47,6 +49,15 @@ export default function RootLayout({
           >
             <TRPCReactProvider>
                 {children}
+              <Toaster
+                position="top-right"
+                richColors
+                closeButton
+                expand={true}
+                toastOptions={{
+                  duration: 4000,
+                }}
+              />
             </TRPCReactProvider>
           </body>
         </html>
