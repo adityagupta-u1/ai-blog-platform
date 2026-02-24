@@ -9,7 +9,6 @@ export default async function Home() {
   await api.post.getAllPosts.prefetch();
   return (
     <HydrateClient>
-      <div>...</div>
       {/** ... */}
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
         <Suspense fallback={<div>Loading...</div>}>

@@ -3,8 +3,8 @@ import {
   ClerkProvider
 } from '@clerk/nextjs';
 // import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from "@/components/ui/sonner";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Nunito_Sans } from "next/font/google";
 import { TRPCReactProvider } from '../trpc/client';
@@ -58,10 +58,10 @@ export default function RootLayout({
                   duration: 4000,
                 }}
               />
+              <ReactQueryDevtools initialIsOpen={false} />
             </TRPCReactProvider>
           </body>
         </html>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </ClerkProvider>
     // </QueryClientProvider >
   );

@@ -1,29 +1,30 @@
 "use client"
 
 import {
-    ChevronsUpDown,
-    LogOut,
-    User,
+  ChevronsUpDown,
+  LogOut,
+  User,
 } from "lucide-react"
 
 import {
-    Avatar,
-    AvatarFallback,
+  Avatar,
+  AvatarFallback,
 } from "@/components/ui/avatar"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
+import { useClerk } from "@clerk/nextjs"
 // import { useLogOutUserMutation } from "~/hooks/useLogout"
 
 export function NavUser({
@@ -37,6 +38,7 @@ export function NavUser({
   const { isMobile } = useSidebar();
 //   const {mutate:logout} = useLogOutUserMutation();
   console.log("User in NavUser:", user);
+  const {signOut} = useClerk();
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -77,7 +79,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-                // onClick={() => logout()}
+                onClick={() => signOut({redirectUrl:'/'})}
                 >
               <LogOut />
               Log out

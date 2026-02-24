@@ -1,34 +1,22 @@
-import PostCardComponent from '@/app/_components/postCardComponent'
-import { api } from '@/trpc/server'
-import React from 'react'
-import { FilterComponent } from "../../_components/filterComponent"
+import { PostsSkeleton } from '@/components/posts-skeleton';
+import { api, HydrateClient } from '@/trpc/server';
+import React, { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import PostsClient from './posts-client';
 
 export default async function Posts() {
-  const posts = await api.post.getPosts() as unknown as { id: string; title: string; slug: string }[] | undefined
+
+  await api.post.getPosts.prefetch();
 
   return (
-    <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Posts</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage and view all your blog posts
-        </p>
-      </div>
+    <HydrateClient>
+      <ErrorBoundary fallback={<div>Something Went Wrong</div>} >
+        <Suspense fallback={<PostsSkeleton />} >
+          <PostsClient />
+        </Suspense>
+      </ErrorBoundary>
+    </HydrateClient>
 
-      <FilterComponent>
-        {posts && posts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <PostCardComponent key={post.id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No posts found.</p>
-          </div>
-        )}
-      </FilterComponent>
-    </div>
   )
 }
 

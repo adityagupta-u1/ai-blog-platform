@@ -1,10 +1,10 @@
 "use client"
 
 import {
-  Clock,
+  // Clock,
   Command,
   LifeBuoy,
-  Settings,
+  // Settings,
   Users,
   Wallet,
   type LucideProps,
@@ -83,22 +83,22 @@ const roleNavData: Record<Role, SidebarData> = {
         url: "/dashboard/createPost",
         icon: Wallet,
       },
-      {
-        title: "AI Tools",
-        url: "#",
-        icon: Settings,
-        items: [
-          { title: "Generate Blog", url: "/dashboard/ai/generate" },
-          { title: "SEO Optimizer", url: "/dashboard/ai/seo" },
-          { title: "Title Generator", url: "/dashboard/ai/title" },
-          { title: "Content Ideas", url: "/dashboard/ai/ideas" },
-        ],
-      },
-      {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: Clock,
-      },
+      // {
+      //   title: "AI Tools",
+      //   url: "#",
+      //   icon: Settings,
+      //   items: [
+      //     { title: "Generate Blog", url: "/dashboard/ai/generate" },
+      //     { title: "SEO Optimizer", url: "/dashboard/ai/seo" },
+      //     { title: "Title Generator", url: "/dashboard/ai/title" },
+      //     { title: "Content Ideas", url: "/dashboard/ai/ideas" },
+      //   ],
+      // },
+      // {
+      //   title: "Analytics",
+      //   url: "/dashboard/analytics",
+      //   icon: Clock,
+      // },
     ],
     navSecondary: [
       {
@@ -126,11 +126,11 @@ const roleNavData: Record<Role, SidebarData> = {
         url: "/dashboard/createPost",
         icon: Wallet,
       },
-      {
-        title: "AI Assistant",
-        url: "/dashboard/ai",
-        icon: Settings,
-      },
+      // {
+      //   title: "AI Assistant",
+      //   url: "/dashboard/ai",
+      //   icon: Settings,
+      // },
     ],
     navSecondary: [
       {
