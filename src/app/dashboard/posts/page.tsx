@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { PostsSkeleton } from '@/components/posts-skeleton';
 import { api, HydrateClient } from '@/trpc/server';
 import React, { Suspense } from 'react';
