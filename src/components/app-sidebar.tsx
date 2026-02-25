@@ -3,7 +3,10 @@
 import {
   // Clock,
   Command,
+  FileText,
   LifeBuoy,
+  NotepadText,
+  PencilIcon,
   // Settings,
   Users,
   Wallet,
@@ -81,7 +84,12 @@ const roleNavData: Record<Role, SidebarData> = {
       {
         title: "Create Post",
         url: "/dashboard/createPost",
-        icon: Wallet,
+        icon: FileText,
+      },
+      {
+        title: "Drafts",
+        url: "/dashboard/drafts",
+        icon: PencilIcon
       },
       // {
       //   title: "AI Tools",

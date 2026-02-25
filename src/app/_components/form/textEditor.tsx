@@ -36,10 +36,7 @@ import {
     Tag
 } from 'lucide-react';
 
-enum status {
-    draft = 'draft',
-    publish = 'publish',
-}
+import { status } from '@/global';
 
 function prettifyGeminiOutput(raw: string) {
     try {

@@ -1,6 +1,6 @@
 import { db } from "@/server/db";
 import { categories, posts, postTags, tags } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
 import { env } from "../../../env";
@@ -51,7 +51,36 @@ export const postRouter = createTRPCRouter({
         id: posts.id,
         title: posts.title,
         slug: posts.slug,
-      }).from(posts);
+        status: posts.status
+      }).from(posts).where(eq(posts.status, "publish"));
+      return postList
+    }
+  ),
+  // getAllDrafts: protectedProcedure
+  // .query(
+  //   async () => {
+  //     //Read from redis(cache)
+  //     const postList = await db.select({
+  //       id: posts.id,
+  //       title: posts.title,
+  //       slug: posts.slug,
+  //       status: posts.status
+  //     }).from(posts).where(eq(posts.status, "draft"));
+  //     return postList
+  //   }
+  // ),
+  getDrafts: protectedProcedure
+  .query(
+    async ({ctx}) => {
+      const user = ctx.session.userId;
+      const postList = await db.select({
+        id: posts.id,
+        title: posts.title,
+        slug:posts.slug,
+        status: posts.status
+      }).from(posts).where(
+        and(eq(posts.userId, user),eq(posts.status, "draft"))
+      );
       return postList
     }
   ),
@@ -62,8 +91,11 @@ export const postRouter = createTRPCRouter({
       const postList = await db.select({
         id: posts.id,
         title: posts.title,
-        slug:posts.slug
-      }).from(posts).where(eq(posts.userId, user));
+        slug:posts.slug,
+        status: posts.status
+      }).from(posts).where(
+        and(eq(posts.userId, user),eq(posts.status, "publish"))
+      );
       return postList
     }
   ),
@@ -73,16 +105,10 @@ export const postRouter = createTRPCRouter({
   }))
   .query(
     async ({input}) => {
-
-      console.log("Fetching post with slug: ", input.slug);
-      // 
       const post = await redis.get(`post:${input.slug}`) as unknown as string | null;
       const tagsRedis = await redis.smembers(`post:${input.slug}:tags`) as string[] | null;
-      console.log("Post from Redis: ", post);
-      console.log("Tags from Redis: ", tagsRedis);
       // const tagArray = await redis.
       if(!post){
-        console.log("Post not found in Redis, fetching from Postgres");
         const post = await db.select({
           id: posts.id,
           title: posts.title,
@@ -93,9 +119,11 @@ export const postRouter = createTRPCRouter({
         .from(posts)
         .leftJoin(categories,eq(posts.categoryId, categories.id))
         .where(
-            eq(posts.slug, input.slug)
+          // and(
+            eq(posts.slug, input.slug),
+          //   eq(posts.status, input.status)
+          // )
         );
-        console.log("Post from Postgres: ", post);
         const tagArray = await db
           .select({
             id: tags.id,
@@ -114,9 +142,7 @@ export const postRouter = createTRPCRouter({
         }
         return updatedPost
       }
-      console.log("post before parsing: ", post);
       const parsedPost = JSON.parse(post) as unknown as PostRedisWithoutTags;
-      console.log("Parsed post: ", parsedPost);
       const updatedPost = {
         id: parsedPost.id,
         title: parsedPost.title,
@@ -125,7 +151,6 @@ export const postRouter = createTRPCRouter({
         tags: tagsRedis || [],
         slug: parsedPost.slug
       } as PostRedis;
-      console.log("Returning post: ", updatedPost);
       return updatedPost
     }
   ),
@@ -211,23 +236,24 @@ export const postRouter = createTRPCRouter({
       }
 
       const postRedisData = JSON.stringify({
-        id:savePost[0].id, 
-        title:input.title, 
+        id:savePost[0].id,
+        title:input.title,
         content:input.content,
         category:category[0].id,
         slug:savePost[0].slug,
-        banner_img: input.image_url,
-        status: input.status,
+        banner_img: input.image_url
       })
       console.log("Post data to be saved in Redis: ", postRedisData);
-      // Writing to Redis
-      await redis.set(`post:${savePost[0].slug}`, postRedisData
-        , { ex: 3600 });
-      for(const tag of input.tags) {
-        // Add each tag to the Redis set for the post
-        await redis.sadd(`tags:${tag}`, `${savePost[0].id}`);
-        await redis.sadd(`post:${savePost[0].slug}:tags`, tag);
-      }   
+      if(input.status === "publish"){
+        //Saving to Redis
+        await redis.set(`post:${savePost[0].slug}`, postRedisData
+          , { ex: 3600 });
+        for(const tag of input.tags) {
+          // Add each tag to the Redis set for the post
+          await redis.sadd(`tags:${tag}`, `${savePost[0].id}`);
+          await redis.sadd(`post:${savePost[0].slug}:tags`, tag);
+        }
+      }
       return savePost[0].id;
     }
   ),
