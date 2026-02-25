@@ -217,6 +217,7 @@ export const postRouter = createTRPCRouter({
         category:category[0].id,
         slug:savePost[0].slug,
         banner_img: input.image_url,
+        status: input.status,
       })
       console.log("Post data to be saved in Redis: ", postRedisData);
       // Writing to Redis

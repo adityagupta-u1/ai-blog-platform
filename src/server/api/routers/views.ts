@@ -1,8 +1,9 @@
 import { db } from "@/server/db";
 import { views } from "@/server/db/schema";
-import { and, eq, gt } from "drizzle-orm";
+import { subDays } from "date-fns";
+import { and, eq, gt, gte, sql } from "drizzle-orm";
 import { z } from "zod";
-import { baseProcedure, createTRPCRouter } from "../trpc";
+import { baseProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 
 const getDuplicateView = async (userId:string | null,postId:string,anonId: string | null) => {
     if(userId){
@@ -13,7 +14,6 @@ const getDuplicateView = async (userId:string | null,postId:string,anonId: strin
                 gt(views.viewedAt, new Date(Date.now() - 24 * 60 * 60 * 1000))
             )
         );
- 
         return isDuplicateView;
     } else if(anonId) {
         const isDuplicateView = await db.select().from(views).where(
@@ -63,6 +63,35 @@ export const viewsRouter = createTRPCRouter({
             } else {
                 return null
             }
-             
+    }),
+
+    getViewsByUserId: protectedProcedure
+    .input(z.object({
+        userId:z.string()
+    }))
+    .query(async ({input:{userId}}) => {
+        const viewsCount = await db.select({count:sql<number>`count(*)`}).from(views).where(eq(views.userId,userId));
+        return viewsCount[0].count;
+    }),
+    getTopPostByViews: protectedProcedure
+    .query(async () => {
+        const topPost = await db.select({
+            postId: views.postId,
+            count: sql<number>`count(*)`
+        }).from(views).groupBy(views.postId).orderBy(sql`count(*) DESC`).limit(5);
+        return topPost;
+    }),
+    getViewsByLast30Days: protectedProcedure
+    .input(z.object({
+        userId:z.string()
+    }))
+    .query(async ({input:{userId}}) => {
+        const thirtyDaysAgo = subDays(new Date(),30)
+        const viewsByDay = await db.select({
+            date:sql<string>`DATE(${views.viewedAt})`,
+            count:sql<number>`count(*)`
+        }).from(views).where(and(eq(views.userId,userId),gte(views.viewedAt, thirtyDaysAgo))).groupBy(sql`DATE(${views.viewedAt})`).orderBy(sql`DATE(${views.viewedAt}) ASC`);
+        return viewsByDay;
     })
 })
+

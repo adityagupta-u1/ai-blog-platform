@@ -16,7 +16,7 @@ import ListItem from '@tiptap/extension-list-item';
 import Text from '@tiptap/extension-text';
 import { Editor, EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ParagraphActions } from '../../../lib/tiptap';
@@ -95,6 +95,8 @@ export default function TextEditor({
     slug?: string;
 }) {
     const { userId, isLoaded } = useAuth();
+    const [submitting,setIsSubmitting] = useState<boolean>(false);
+    const [postStatus,setPostStatus] = useState<status>(status.draft);
 
     const schema = z.object({
         tags: z.array(z.string().min(1)).min(1, "At least one tag is required"),
@@ -166,16 +168,18 @@ export default function TextEditor({
         }
         
         if (functions === "save" && savePostMutate) {
+            setIsSubmitting(true);
             savePostMutate({
                 userId: userId || "",
                 title: title,
                 content: editor?.getHTML() || "",
-                status: status.draft,
+                status: postStatus,
                 categoryId: data.category,
                 tags: data.tags,
                 image_url: imageUrl
             });
         } else if (postId && editPostMutate) {
+            setIsSubmitting(true);
             editPostMutate({
                 postId: postId,
                 title: title,
@@ -312,16 +316,20 @@ export default function TextEditor({
                                     <Button 
                                         type="submit" 
                                         variant="outline"
-                                        className="flex-1 gap-2"
+                                        className="flex-1 gap-2 cursor-pointer"
+                                        disabled={submitting}
+                                        onClick={() => setPostStatus(status.draft)}
                                     >
                                         <Save className="h-4 w-4" />
                                         Save as Draft
                                     </Button>
                                     <Button 
                                         type="submit" 
-                                        className="flex-1 gap-2"
+                                        className="flex-1 gap-2 cursor-pointer"
+                                        disabled={submitting}
+                                        onClick={() => setPostStatus(status.publish)}
                                     >
-                                        <Send className="h-4 w-4" />
+                                        <Send className="h-4 w-4r" />
                                         Publish Post
                                     </Button>
                                 </>

@@ -160,8 +160,8 @@ export function AppSidebar({ email,name,...props }:AppSidebarProps ) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ATS</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-medium">AI Blog Plat.</span>
+                  {/* <span className="truncate text-xs">Enterprise</span> */}
                 </div>
               </a>
             </SidebarMenuButton>

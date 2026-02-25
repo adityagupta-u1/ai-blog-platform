@@ -1,22 +1,32 @@
 'use client'
 
+
+
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//     DropdownMenu,
+//     DropdownMenuContent,
+//     DropdownMenuItem,
+//     DropdownMenuLabel,
+//     DropdownMenuSeparator,
+//     DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 // import { api } from "@/trpc/server";
-import { ArrowUpRight, BarChart3, Calendar, Eye, FileText, Plus, Settings, Users } from "lucide-react";
+import {
+    ArrowUpRight,
+    BarChart3,
+    Calendar,
+    Eye,
+    FileText,
+    Plus,
+} from "lucide-react";
 import Link from "next/link";
 
+import { ViewsChart } from "@/components/views-chart";
 import { trpc } from "@/trpc/client";
 import type { LucideIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -48,28 +58,13 @@ const StatCard = ({ title, value, icon: Icon, trend }: {
     </Card>
 );
 
-// ViewChart Component (placeholder - replace with your actual chart)
-const ViewChart = () => (
-    <Card className="col-span-2">
-        <CardHeader>
-        <CardTitle>Analytics Overview</CardTitle>
-        <CardDescription>Your page views over the last 30 days</CardDescription>
-        </CardHeader>
-        <CardContent>
-        <div className="h-[300px] w-full bg-gradient-to-b from-primary/5 to-transparent rounded-lg flex items-center justify-center border-2 border-dashed">
-            <div className="text-center">
-            <BarChart3 className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">Chart visualization would go here</p>
-            </div>
-        </div>
-        </CardContent>
-    </Card>
-);
 
-export default function DashboardClient() {
+
+export default function DashboardClient({userId}:{userId:string}) {
     const [data] = trpc.post.getPosts.useSuspenseQuery();
     const posts = data as unknown as { id: string; title: string; content: string; slug: string }[] | undefined;
-
+    const [views] = trpc.views.getViewsByUserId.useSuspenseQuery({ userId});
+    const [viewsLast30Days] = trpc.views.getViewsByLast30Days.useSuspenseQuery({userId});
     const [badgeTime,setBadgeTime] = useState<string>("");
 
     useEffect(() => {
@@ -112,30 +107,30 @@ export default function DashboardClient() {
         <Separator />
 
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <StatCard 
             title="Total Posts" 
             value={posts.length} 
             icon={FileText}
-            trend="12"
+            // trend="12"
             />
             <StatCard 
             title="Total Views" 
-            value="28.4K" 
+            value={views.toString()} 
             icon={Eye}
-            trend="8"
+            // trend="8"
             />
-            <StatCard 
+            {/* <StatCard 
             title="Subscribers" 
             value="1.4K" 
             icon={Users}
-            trend="23"
-            />
+            // trend="23"
+            /> */}
             <StatCard 
             title="Engagement" 
-            value="4.2%" 
+            value={`${posts.length > 0 ? ((views / posts.length)) : 0}%`}
             icon={BarChart3}
-            trend="2"
+            // trend="2"
             />
         </div>
 
@@ -143,7 +138,7 @@ export default function DashboardClient() {
         <div className="grid gap-6 lg:grid-cols-3">
             {/* Chart Section */}
             <div className="lg:col-span-2">
-            <ViewChart />
+            <ViewsChart data={viewsLast30Days} />
             </div>
 
             {/* Latest Posts Section */}
@@ -230,7 +225,7 @@ export default function DashboardClient() {
                     New Post
                     </Link>
                 </Button>
-                <Button size="default" variant="outline" className="shadow-sm" asChild>
+                {/* <Button size="default" variant="outline" className="shadow-sm" asChild>
                     <Link href="/dashboard/analytics">
                     <BarChart3 className="h-4 w-4 mr-2" />
                     Analytics
@@ -269,7 +264,7 @@ export default function DashboardClient() {
                         </Link>
                     </DropdownMenuItem>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu> */}
                 </div>
             </div>
             </CardContent>

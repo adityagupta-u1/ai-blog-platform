@@ -170,7 +170,7 @@ export default function Form({tags,category}:{tags:{id:string,name:string}[],cat
                             tags: [], 
                             category: null
                         }} 
-                        title={title} 
+                        title={title}
                         savePostMutate={savePostMutate} 
                         editPostMutate={undefined}
                         categories={category}
