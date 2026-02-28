@@ -8,7 +8,7 @@ import React from 'react';
 export default function DraftsClient() {
 
     const [data] = trpc.post.getDrafts.useSuspenseQuery();
-    const drafts = data as unknown as { id: string; title: string; content: string; slug: string }[] | undefined;
+    const drafts = data as unknown as { id: string; title: string; content: string; slug: string; status:string }[] | undefined;
 
     return (
         <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">

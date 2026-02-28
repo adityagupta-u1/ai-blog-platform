@@ -25,6 +25,7 @@ interface PostCardProps {
     id: string
     title: string
     slug: string
+    status:string
   }
 }
 
@@ -104,7 +105,7 @@ export default function PostCardComponent({ post }: PostCardProps) {
           disabled={isPending}
           onClick={handleEdit}
         >
-          <Link href={`/dashboard/posts/${post.slug}/edit`}>
+          <Link href={`/dashboard/${post.status}/${post.slug}/edit`}>
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </Link>
