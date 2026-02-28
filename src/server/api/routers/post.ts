@@ -105,6 +105,7 @@ export const postRouter = createTRPCRouter({
   }))
   .query(
     async ({input}) => {
+      console.log(input.slug)
       const post = await redis.get(`post:${input.slug}`) as unknown as string | null;
       const tagsRedis = await redis.smembers(`post:${input.slug}:tags`) as string[] | null;
       // const tagArray = await redis.
@@ -124,6 +125,7 @@ export const postRouter = createTRPCRouter({
           //   eq(posts.status, input.status)
           // )
         );
+        console.log("Post fetched from db",post)
         const tagArray = await db
           .select({
             id: tags.id,
@@ -140,6 +142,7 @@ export const postRouter = createTRPCRouter({
         if(post.length === 0){
           return null;
         }
+        // console.log("Fetched post from db",updatedPost)
         return updatedPost
       }
       const parsedPost = JSON.parse(post) as unknown as PostRedisWithoutTags;
@@ -209,7 +212,7 @@ export const postRouter = createTRPCRouter({
         title: input.title,
         content: input.content,
         categoryId: input.categoryId,
-        slug: input.title.replace(/\s+/g, '-').toLowerCase().concat(`-${uuid()}`), 
+        slug: input.title.replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, '-').toLowerCase().concat(`-${uuid()}`), 
         status: input.status,
         isPublished: input.status === "publish",
         banner_img: input.image_url,
