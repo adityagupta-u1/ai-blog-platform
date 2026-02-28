@@ -88,7 +88,7 @@ const roleNavData: Record<Role, SidebarData> = {
       },
       {
         title: "Drafts",
-        url: "/dashboard/drafts",
+        url: "/dashboard/draft",
         icon: PencilIcon
       },
       // {

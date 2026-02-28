@@ -115,7 +115,8 @@ export const postRouter = createTRPCRouter({
           title: posts.title,
           content: posts.content,
           slug: posts.slug,
-          category: categories.id
+          category: categories.id,
+          status:posts.status
         })
         .from(posts)
         .leftJoin(categories,eq(posts.categoryId, categories.id))
@@ -269,11 +270,13 @@ export const postRouter = createTRPCRouter({
       content: z.string().min(1),
       categoryId:z.string(),
       tags:z.array(z.string().min(1)),
-      image_url:z.string().min(1)
+      image_url:z.string().min(1),
+      status:z.string()
     })
   )
   .mutation(
     async ({input}) => {
+      console.log(input.status)
       //Edit in Postgres
       const updatedPost = await db
       .update(posts)
@@ -281,13 +284,15 @@ export const postRouter = createTRPCRouter({
         content: input.content,
         title: input.title,
         categoryId: input.categoryId,
+        status:input.status
       })
       .where(eq(posts.id,input.postId))
       .returning({
         id: posts.id,
         title:posts.title,
         content:posts.content,
-        slug:posts.slug 
+        slug:posts.slug,
+        status:posts.status
       });
       const category = await db.select({
         id: categories.id,
@@ -317,9 +322,11 @@ export const postRouter = createTRPCRouter({
       } as PostRedis;
 
       //Edit in Redis
-      await redis.del(`post:${input.slug}`)
-      await redis.set(`post:${updatedPost[0].slug}`,JSON.stringify(updatedRedisPost),{ex: 3600})
-      return updatedRedisPost.slug;
+      if(input.status === "publish"){
+        await redis.del(`post:${input.slug}`)
+        await redis.set(`post:${updatedPost[0].slug}`,JSON.stringify(updatedRedisPost),{ex: 3600})
+      }
+      return {slug:updatedPost[0].slug,status:updatedPost[0].status};
     }
   ),
   deletePost: protectedProcedure

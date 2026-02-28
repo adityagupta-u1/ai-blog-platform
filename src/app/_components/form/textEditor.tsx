@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 
 import { status } from '@/global';
+// import { posts } from '@/server/db/schema';
 
 function prettifyGeminiOutput(raw: string) {
     try {
@@ -64,14 +65,15 @@ export default function TextEditor({
     post: {
         content: string,
         tags: string[],
-        category: string | null
+        category: string | null,
+        status:string
     },
     title: string,
     savePostMutate?: (data: {
         userId: string,
         title: string,
         content: string,
-        status: status,
+        status: string,
         categoryId: string,
         tags: string[],
         image_url: string
@@ -83,7 +85,8 @@ export default function TextEditor({
         slug: string,
         categoryId: string,
         tags: string[],
-        image_url: string
+        image_url: string,
+        status: string
     }) => void,
     functions: string,
     postId?: string,
@@ -95,6 +98,7 @@ export default function TextEditor({
     const [submitting,setIsSubmitting] = useState<boolean>(false);
     const [postStatus,setPostStatus] = useState<status>(status.draft);
 
+    console.log(post.status)
     const schema = z.object({
         tags: z.array(z.string().min(1)).min(1, "At least one tag is required"),
         category: z.string().min(1, "Category is required"),
@@ -109,6 +113,7 @@ export default function TextEditor({
             .refine((file) => ["image/png", "image/jpeg"].includes(file.type), {
                 message: "Only PNG and JPEG images are allowed",
             }),
+        status:z.string()
     });
 
     const form = useForm<z.infer<typeof schema>>({
@@ -116,6 +121,7 @@ export default function TextEditor({
             category: post.category || "",
             tags: post.tags || [],
             file: {} as File,
+            status:post.status
         },
         resolver: zodResolver(schema),
     })
@@ -163,30 +169,53 @@ export default function TextEditor({
             console.error("Image upload failed");
             return;
         }
+        console.log("On Submit data",data)
+        // if(post.status === "draft"){
+        //     if(functions === "edit" && editPostMutate && postId){
+        //         if(draftStatus === status.draft){
+        //             setIsSubmitting(true);
+        //             editPostMutate({
+        //                 postId: postId,
+        //                 title: title,
+        //                 content: editor?.getHTML() || "",
+        //                 slug: slug || "",
+        //                 categoryId: data.category,
+        //                 tags: data.tags,
+        //                 image_url: imageUrl
+        //             });
+        //         } else {
+
+        //         }
+
+        //     }
+        // } else {
+            if (functions === "save" && savePostMutate) {
+                setIsSubmitting(true);
+                savePostMutate({
+                    userId: userId || "",
+                    title: title,
+                    content: editor?.getHTML() || "",
+                    status: postStatus,
+                    categoryId: data.category,
+                    tags: data.tags,
+                    image_url: imageUrl
+                });
+            } else if (postId && editPostMutate) {
+                setIsSubmitting(true);
+                editPostMutate({
+                    postId: postId,
+                    title: title,
+                    content: editor?.getHTML() || "",
+                    slug: slug || "",
+                    categoryId: data.category,
+                    tags: data.tags,
+                    image_url: imageUrl,
+                    status:data.status
+                });
+            }
+        // }
         
-        if (functions === "save" && savePostMutate) {
-            setIsSubmitting(true);
-            savePostMutate({
-                userId: userId || "",
-                title: title,
-                content: editor?.getHTML() || "",
-                status: postStatus,
-                categoryId: data.category,
-                tags: data.tags,
-                image_url: imageUrl
-            });
-        } else if (postId && editPostMutate) {
-            setIsSubmitting(true);
-            editPostMutate({
-                postId: postId,
-                title: title,
-                content: editor?.getHTML() || "",
-                slug: slug || "",
-                categoryId: data.category,
-                tags: data.tags,
-                image_url: imageUrl
-            });
-        }
+
     }
 
     return (
@@ -215,7 +244,7 @@ export default function TextEditor({
                     {/* Editor Content */}
                     <div className="p-6">
                         <EditorContent 
-                            editor={editor} 
+                            editor={editor}
                             className="prose prose-sm sm:prose-base max-w-none dark:prose-invert focus:outline-none min-h-[400px]"
                         />
                     </div>
@@ -240,6 +269,7 @@ export default function TextEditor({
                                     defaultValue={post.category || ""}
                                     render={({ field }) => (
                                         <SingleInputSelector 
+                                            name="Categories"
                                             value={field.value} 
                                             options={categories} 
                                             valueChange={field.onChange} 
@@ -280,31 +310,60 @@ export default function TextEditor({
                                     )}
                                 />
                             </div>
+
+                            {/* Featured Image */}
+                            <div className="space-y-3">
+                                <Label className="flex items-center gap-2 text-sm font-medium">
+                                    <ImageIcon className="h-4 w-4" />
+                                    Featured Image
+                                </Label>
+                                <Controller
+                                    name="file"
+                                    control={form.control}
+                                    render={({ field }) => (
+                                        <MediaUploader
+                                            onFieldStateChange={(file) => field.onChange(file)}
+                                        />
+                                    )}
+                                />
+                                <ErrorMessage
+                                    name="file"
+                                    errors={form.formState.errors}
+                                    render={({ message }) => (
+                                        <p className="text-sm text-destructive">{message}</p>
+                                    )}
+                                />
+                            </div>
+                            {/* Status */}
+                            <div className="space-y-3">
+                                <Label className="flex items-center gap-2 text-sm font-medium">
+                                    <ImageIcon className="h-4 w-4" />
+                                    Status
+                                </Label>
+                                <Controller
+                                    name="status"
+                                    control={form.control}
+                                    render={({ field }) => (
+                                        <SingleInputSelector
+                                        name='Status'
+                                        options={[{id:"publish",name:"publish"},{id:"draft",name:"draft"}]}
+                                        value={field.value}
+                                        valueChange={field.onChange}
+                                        />
+                                    )}
+                                />
+                                <ErrorMessage
+                                    name="status"
+                                    errors={form.formState.errors}
+                                    render={({ message }) => (
+                                        <p className="text-sm text-destructive">{message}</p>
+                                    )}
+                                />
+                            </div>
                         </div>
 
-                        {/* Featured Image */}
-                        <div className="space-y-3">
-                            <Label className="flex items-center gap-2 text-sm font-medium">
-                                <ImageIcon className="h-4 w-4" />
-                                Featured Image
-                            </Label>
-                            <Controller
-                                name="file"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <MediaUploader
-                                        onFieldStateChange={(file) => field.onChange(file)}
-                                    />
-                                )}
-                            />
-                            <ErrorMessage
-                                name="file"
-                                errors={form.formState.errors}
-                                render={({ message }) => (
-                                    <p className="text-sm text-destructive">{message}</p>
-                                )}
-                            />
-                        </div>
+
+
 
                         {/* Action Buttons */}
                         <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
@@ -330,15 +389,16 @@ export default function TextEditor({
                                         Publish Post
                                     </Button>
                                 </>
-                            ) : editPostMutate && functions === "edit" && postId && (
-                                <Button 
-                                    type="submit" 
+                            ) :  (
+                                <Button
+                                    type="submit"
                                     className="flex-1 gap-2"
                                 >
                                     <Edit className="h-4 w-4" />
                                     Update Post
                                 </Button>
-                            )}
+                            )
+                        }
                         </div>
                     </form>
                 </CardContent>

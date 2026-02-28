@@ -12,7 +12,7 @@ type EditPageProps = {
 export default async function EditPost({ params }: EditPageProps) {
   const { postSlug } = await params;
   
-  const post = await api.post.getPostBySlug({ slug: postSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null } | undefined;
+  const post = await api.post.getPostBySlug({ slug: postSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null;status:string } | undefined;
 
 
   if (!post) {
@@ -33,6 +33,7 @@ export default async function EditPost({ params }: EditPageProps) {
           slug: post.slug,
           category: post.category, // Assuming category is not needed for edit
           tags: post.tags, // Assuming tags are not needed for edit
+          status:post.status
         }}
         tags={tags}
         categories={categories}

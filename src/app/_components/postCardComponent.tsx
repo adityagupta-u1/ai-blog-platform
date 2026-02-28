@@ -30,7 +30,8 @@ interface PostCardProps {
 }
 
 export default function PostCardComponent({ post }: PostCardProps) {
-  const router = useRouter()
+  const router = useRouter();
+  console.log(post)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false)
 
   const { mutate, isPending } = trpc.post.deletePost.useMutation({
@@ -57,7 +58,7 @@ export default function PostCardComponent({ post }: PostCardProps) {
   }
 
   const handleView = () => {
-    toast.info('Navigating to post', {
+    toast.info(`Navigating to ${post.status}`, {
       description: `Viewing "${post.title}"`,
       duration: 2000,
     })
@@ -105,7 +106,7 @@ export default function PostCardComponent({ post }: PostCardProps) {
           disabled={isPending}
           onClick={handleEdit}
         >
-          <Link href={`/dashboard/${post.status}/${post.slug}/edit`}>
+          <Link href={`/dashboard/${post.status === "draft" ? post.status : "posts"}/${post.slug}/edit`}>
             <Edit className="w-4 h-4 mr-2" />
             Edit
           </Link>

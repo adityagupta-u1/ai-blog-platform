@@ -2,7 +2,7 @@
 
 import { api } from '@/trpc/server';
 import React from 'react';
-import ClientEditorWrapper from '../../../_components/ClientEditorWrapper';
+import ClientEditorWrapper from '../../../../_components/ClientEditorWrapper';
 
 type EditPageProps = {
     params: Promise<{
@@ -12,7 +12,7 @@ type EditPageProps = {
 export default async function SingleDraft({ params }: EditPageProps) {
     const { draftSlug } = await params;
 
-    const post = await api.post.getPostBySlug({ slug: draftSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null } | undefined;
+    const post = await api.post.getPostBySlug({ slug: draftSlug }) as unknown as { id: string; title: string; content: string; slug: string,category:string | null; tags: string[] | null,status:string } | undefined;
 
 
     if (!post) {
@@ -24,7 +24,7 @@ export default async function SingleDraft({ params }: EditPageProps) {
     console.log("Post to edit:", post);
     return (
         <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Edit Post</h1>
+        <h1 className="text-2xl font-bold mb-4">Edit Draft</h1>
         <ClientEditorWrapper
             post={{
             id: post.id,
@@ -32,7 +32,8 @@ export default async function SingleDraft({ params }: EditPageProps) {
             content: post.content,
             slug: post.slug,
             category: post.category, // Assuming category is not needed for edit
-            tags: post.tags, // Assuming tags are not needed for edit
+            tags: post.tags, 
+            status:post.status// Assuming tags are not needed for edit
             }}
             tags={tags}
             categories={categories}

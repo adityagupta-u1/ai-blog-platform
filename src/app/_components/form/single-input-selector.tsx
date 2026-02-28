@@ -10,9 +10,10 @@ interface SingleInputSelectorProps {
 }[] | undefined
     value: string | undefined;
     valueChange: (value: string) => void;
-}   
+    name:string;
+}
 
-const SingleInputSelector: FC<SingleInputSelectorProps> = ({options,value ,valueChange}) => {
+const SingleInputSelector: FC<SingleInputSelectorProps> = ({options,value ,valueChange,name}) => {
 
   return (
     <Select onValueChange={valueChange} value={value}>
@@ -21,7 +22,7 @@ const SingleInputSelector: FC<SingleInputSelectorProps> = ({options,value ,value
         </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-            <SelectLabel>Categories</SelectLabel>
+            <SelectLabel>{name}</SelectLabel>
             {
             options && options.map((option) => (
                 <SelectItem key={option.id} value={option.id}>{option.name}</SelectItem>

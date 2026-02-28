@@ -13,7 +13,8 @@ export default function MultiTagSelect({ selectedTags, setValue, options }:{
   setValue:UseFormSetValue<{
     tags: string[];
     category:string;
-   file: File;
+    file: File;
+    status:string
 }>
   options:  { id: string; name: string; }[] | undefined;
 }) {
