@@ -5,7 +5,7 @@ import {
   Command,
   FileText,
   LifeBuoy,
-  NotepadText,
+  // NotepadText,
   PencilIcon,
   // Settings,
   Users,
